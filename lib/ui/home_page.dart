@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:contactsflutterapp/helpers/contact_helper.dart';
+import 'package:contactsflutterapp/ui/contact_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,10 +16,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    helper.getContacts().then((contacts) => print(contacts));
-    setState(() {
-      helper.getContacts().then((contacts) => this.contacts = contacts);
-    });
+    _getAllContacts();
   }
 
   @override
@@ -31,7 +29,9 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: Colors.blueGrey,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _showContactPage();
+        },
         child: Icon(Icons.add),
         backgroundColor: Colors.indigo,
       ),
@@ -48,7 +48,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _contactCard(BuildContext context, int index) {
-    print("AAA");
     return GestureDetector(
       child: Card(
         child: Padding(
@@ -81,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(fontSize: 18.0),
                     ),
                     Text(
-                      contacts[index].document ?? "",
+                      contacts[index].register ?? "",
                       style: TextStyle(fontSize: 18.0),
                     ),
                   ],
@@ -91,6 +90,29 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+      onTap: () {
+        _showContactPage(contact: contacts[index]);
+      },
     );
+  }
+
+  void _getAllContacts() {
+    helper.getContacts().then((contacts) =>
+      setState(() {
+        this.contacts = contacts;
+      })
+    );
+  }
+
+  void _showContactPage({Contact contact}) async {
+    final recContact = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ContactPage(contact: contact,))
+    );
+
+    if (recContact != null) {
+      await helper.saveContact(recContact);
+      _getAllContacts();
+    }
   }
 }

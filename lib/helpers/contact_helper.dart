@@ -7,7 +7,7 @@ final String nameColumn = "nameColumn";
 final String emailColumn = "emailColumn";
 final String phoneColumn = "phoneColumn";
 final String imgColumn = "imgColumn";
-final String documentColumn = "documentColumn";
+final String registerColumn = "registerColumn";
 final String cardColumn = "cardColumn";
 
 class ContactHelper {
@@ -21,6 +21,7 @@ class ContactHelper {
 
   Future<Database> get db async {
     if (_db == null) {
+       print("EXEC");
       _db = await initDb();
     }
     return _db;
@@ -33,13 +34,18 @@ class ContactHelper {
     return await openDatabase(path, version: 1, onCreate: (Database db, newerVersion) async {
       await db.execute("CREATE TABLE $contactTable("
           "$idColumn INTEGER PRIMARY KEY, $nameColumn TEXT, $emailColumn TEXT,"
-          "$phoneColumn TEXT, $imgColumn TEXT, $documentColumn TEXT, $cardColumn TEXT)");
+          "$phoneColumn TEXT, $imgColumn TEXT, $registerColumn TEXT, $cardColumn TEXT)");
     });
   }
 
   Future<Contact> saveContact(Contact contact) async {
     Database dbContact = await db;
-    contact.id = await dbContact.insert(contactTable, contact.toMap());
+    if (contact.id == null) {
+      contact.id = await dbContact.insert(contactTable, contact.toMap());
+      return contact;
+    }
+
+    await _updateContact(contact);
     return contact;
   }
 
@@ -47,7 +53,7 @@ class ContactHelper {
     Database dbContact = await db;
     List<Map> maps = await dbContact.query(
       contactTable,
-      columns: [idColumn, nameColumn, emailColumn, phoneColumn, imgColumn, documentColumn, cardColumn],
+      columns: [idColumn, nameColumn, emailColumn, phoneColumn, imgColumn, registerColumn, cardColumn],
       where: "$idColumn = ?",
       whereArgs: [id]
     );
@@ -64,7 +70,7 @@ class ContactHelper {
     return await dbContact.delete(contactTable, where: "$idColumn = ?", whereArgs: [id]);
   }
 
-  Future<int> updateContact(Contact contact) async {
+  Future<int> _updateContact(Contact contact) async {
     Database dbContact = await db;
     return await dbContact.update(
         contactTable,
@@ -104,7 +110,7 @@ class Contact {
   String email;
   String phone;
   String img;
-  String document;
+  String register;
   String card;
 
   Contact();
@@ -115,7 +121,7 @@ class Contact {
     email = map[emailColumn];
     phone = map[phoneColumn];
     img = map[imgColumn];
-    document = map[documentColumn];
+    register = map[registerColumn];
     card = map[cardColumn];
   }
 
@@ -125,7 +131,7 @@ class Contact {
       emailColumn: email,
       phoneColumn: phone,
       imgColumn: img,
-      documentColumn: document,
+      registerColumn: register,
       cardColumn: card
     };
 
@@ -143,7 +149,7 @@ class Contact {
       "name: $name,"
       "email: $email,"
       "phone: $phone,"
-      "document: $document,"
+      "register: $register,"
       "card: $card"
     ")";
   }
