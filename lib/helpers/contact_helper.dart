@@ -74,7 +74,7 @@ class ContactHelper {
     );
   }
 
-  Future<List<Contact>> getContacts(Contact contact) async {
+  Future<List<Contact>> getContacts() async {
     Database dbContact = await db;
     List listMap = await dbContact.rawQuery("SELECT * FROM $contactTable");
 
@@ -107,6 +107,8 @@ class Contact {
   String register;
   String card;
 
+  Contact();
+
   Contact.fromMap(Map map) {
     id = map[idColumn];
     name = map[nameColumn];
@@ -136,6 +138,13 @@ class Contact {
 
   @override
   String toString() {
-    return "Contact(id: $id, name: $name, $email: $email, phone: $phone";
+    return "Contact("
+      "id: $id,"
+      "name: $name,"
+      "email: $email,"
+      "phone: $phone,"
+      "register: $register,"
+      "card: $card"
+    ")";
   }
 }
