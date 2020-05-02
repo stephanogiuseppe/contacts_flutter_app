@@ -7,7 +7,7 @@ final String nameColumn = "nameColumn";
 final String emailColumn = "emailColumn";
 final String phoneColumn = "phoneColumn";
 final String imgColumn = "imgColumn";
-final String registerColumn = "registerColumn";
+final String documentColumn = "documentColumn";
 final String cardColumn = "cardColumn";
 
 class ContactHelper {
@@ -33,7 +33,7 @@ class ContactHelper {
     return await openDatabase(path, version: 1, onCreate: (Database db, newerVersion) async {
       await db.execute("CREATE TABLE $contactTable("
           "$idColumn INTEGER PRIMARY KEY, $nameColumn TEXT, $emailColumn TEXT,"
-          "$phoneColumn TEXT, $imgColumn TEXT, $registerColumn TEXT, $cardColumn TEXT)");
+          "$phoneColumn TEXT, $imgColumn TEXT, $documentColumn TEXT, $cardColumn TEXT)");
     });
   }
 
@@ -47,7 +47,7 @@ class ContactHelper {
     Database dbContact = await db;
     List<Map> maps = await dbContact.query(
       contactTable,
-      columns: [idColumn, nameColumn, emailColumn, phoneColumn, imgColumn, registerColumn, cardColumn],
+      columns: [idColumn, nameColumn, emailColumn, phoneColumn, imgColumn, documentColumn, cardColumn],
       where: "$idColumn = ?",
       whereArgs: [id]
     );
@@ -104,7 +104,7 @@ class Contact {
   String email;
   String phone;
   String img;
-  String register;
+  String document;
   String card;
 
   Contact();
@@ -115,7 +115,7 @@ class Contact {
     email = map[emailColumn];
     phone = map[phoneColumn];
     img = map[imgColumn];
-    register = map[registerColumn];
+    document = map[documentColumn];
     card = map[cardColumn];
   }
 
@@ -125,7 +125,7 @@ class Contact {
       emailColumn: email,
       phoneColumn: phone,
       imgColumn: img,
-      registerColumn: register,
+      documentColumn: document,
       cardColumn: card
     };
 
@@ -143,7 +143,7 @@ class Contact {
       "name: $name,"
       "email: $email,"
       "phone: $phone,"
-      "register: $register,"
+      "document: $document,"
       "card: $card"
     ")";
   }

@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(fontSize: 18.0),
                     ),
                     Text(
-                      contacts[index].register ?? "",
+                      contacts[index].document ?? "",
                       style: TextStyle(fontSize: 18.0),
                     ),
                   ],
