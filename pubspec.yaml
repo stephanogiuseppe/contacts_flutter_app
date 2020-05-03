@@ -27,6 +27,13 @@ dependencies:
   ## DB
   sqflite: ^1.1.5
 
+  ## Camera options
+  url_launcher: ^5.0.2
+  image_picker: ^0.6.0+3
+
+  ## Mask form field
+  flutter_masked_text: ^0.8.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

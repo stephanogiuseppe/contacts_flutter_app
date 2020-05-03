@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:contactsflutterapp/helpers/contact_helper.dart';
 import 'package:contactsflutterapp/ui/contact_page.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -91,7 +92,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       onTap: () {
-        _showContactPage(contact: contacts[index]);
+        _showOptions(context, index);
       },
     );
   }
@@ -114,5 +115,93 @@ class _HomePageState extends State<HomePage> {
       await helper.saveContact(recContact);
       _getAllContacts();
     }
+  }
+  
+  void _showOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return BottomSheet(
+          onClosing: () {},
+          builder: (context) {
+            return Container(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  /* Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: FlatButton(
+                      child: Text("Call", style: TextStyle(color: Colors.indigo, fontSize: 20.0),),
+                      onPressed: () {
+                        launch("tel:${contacts[index].phone}");
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: FlatButton(
+                      child: Text("Email", style: TextStyle(color: Colors.indigo, fontSize: 20.0),),
+                      onPressed: () {},
+                    ),
+                  ),*/
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: FlatButton(
+                      child: Text("Edit", style: TextStyle(color: Colors.indigo, fontSize: 20.0),),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showContactPage(contact: contacts[index]);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: FlatButton(
+                      child: Text("Delete", style: TextStyle(color: Colors.indigo, fontSize: 20.0),),
+                      onPressed: () {
+                        _deleteContactAlert(context, index);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      }
+    );
+  }
+
+  _deleteContactAlert(context, index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete contact"),
+          content: Text("Do you want to delete " + contacts[index].name + "?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            FlatButton(
+              child: Text("Yes"),
+              onPressed: () {
+                setState(() {
+                  helper.deleteContact(contacts[index].id);
+                  contacts.removeAt(index);
+                });
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      }
+    );
   }
 }

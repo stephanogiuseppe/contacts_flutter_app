@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:contactsflutterapp/helpers/contact_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_masked_text/flutter_masked_text.dart';
 
 class ContactPage extends StatefulWidget {
   final Contact contact;
@@ -24,6 +26,8 @@ class _ContactPageState extends State<ContactPage> {
 
   Contact _editedContact;
   bool _userEdited = false;
+  bool _documentCPF = true;
+  MaskedTextController _documentMask = new MaskedTextController(mask: '000.000.000-00', text: '');
 
   @override
   void initState() {
@@ -73,6 +77,16 @@ class _ContactPageState extends State<ContactPage> {
                     ),
                   ),
                 ),
+                onTap: () {
+                  ImagePicker.pickImage(source: ImageSource.camera).then((file) {
+                    if (file == null) {
+                      return;
+                    }
+                    setState(() {
+                      _editedContact.img = file.path;
+                    });
+                  });
+                },
               ),
 
               TextField(
@@ -104,12 +118,47 @@ class _ContactPageState extends State<ContactPage> {
                 },
                 keyboardType: TextInputType.phone,
               ),
+              Row(
+                children: <Widget>[
+                  Text("CPF"),
+                  Radio(
+                    value: true,
+                    groupValue: _documentCPF,
+                    onChanged: (val) {
+                      _documentMask.updateMask('000.000.000-00');
+                      setState(() {
+                        _documentCPF = true;
+                      });
+                    },
+                  ),
+                  Text("CNPJ"),
+                  Radio(
+                    value: false,
+                    groupValue: _documentCPF,
+                    onChanged: (val) {
+                      _documentMask.updateMask('00.000.000/0000-00');
+                      setState(() {
+                        _documentCPF = false;
+                      });
+                    },
+                  ),
+                ],
+              ),
               TextField(
                 controller: _registerController,
                 decoration: InputDecoration(labelText: "Document"),
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.done,
                 onChanged: (text) {
+                  _documentMask.updateText(text);
                   _userEdited = true;
-                  _editedContact.phone = text;
+                  _editedContact.register = _documentMask.text;
+                  setState(() {
+                    _registerController.text = _documentMask.text;
+                    _registerController.selection = new TextSelection.fromPosition(
+                        new TextPosition(offset: _registerController.text.length)
+                    );
+                  });
                 },
               ),
               TextField(
@@ -117,7 +166,7 @@ class _ContactPageState extends State<ContactPage> {
                 decoration: InputDecoration(labelText: "Card"),
                 onChanged: (text) {
                   _userEdited = true;
-                  _editedContact.phone = text;
+                  _editedContact.card = text;
                 },
               ),
             ],
@@ -167,5 +216,9 @@ class _ContactPageState extends State<ContactPage> {
     }
 
     return Future.value(true);
+  }
+
+  void _handleRadioValueChange(context) {
+    print(context);
   }
 }
